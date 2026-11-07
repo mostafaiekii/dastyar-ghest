@@ -1,0 +1,21 @@
+# Gradle
+.gradle/
+build/
+app/build/
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Local SDK path (ساخت خود Android Studio)
+local.properties
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Keystore — هرگز فایل امضای اپ را در گیت‌هاب قرار نده!
+*.jks
+*.keystore
