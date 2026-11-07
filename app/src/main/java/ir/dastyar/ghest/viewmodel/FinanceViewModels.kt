@@ -316,7 +316,8 @@ class ReportsViewModel(app: Application) : AndroidViewModel(app) {
         val progress: Float get() = if (totalDue <= 0) 0f else totalPaid.toFloat() / totalDue
     }
 
-    private val year = kotlinx.coroutines.flow.MutableStateFlow(currentYear)
+    private val year: kotlinx.coroutines.flow.MutableStateFlow<Int> =
+        kotlinx.coroutines.flow.MutableStateFlow(currentYearInit)
 
     val state: StateFlow<ReportState> = combine(
         db.installmentDao().observeAllOfActive(),

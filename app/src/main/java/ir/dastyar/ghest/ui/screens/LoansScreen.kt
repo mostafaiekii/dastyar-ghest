@@ -48,6 +48,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import ir.dastyar.ghest.data.Loan
 import ir.dastyar.ghest.data.LoanType
 import ir.dastyar.ghest.ui.components.DueChip
 import ir.dastyar.ghest.ui.components.EmptyState

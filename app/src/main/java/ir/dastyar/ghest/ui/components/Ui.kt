@@ -50,6 +50,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.unit.dp
 import ir.dastyar.ghest.util.Farsi
 import ir.dastyar.ghest.util.Jalali
+import ir.dastyar.ghest.ui.theme.WarnAmber
 
 /* ---------------- چیپ وضعیت سررسید ---------------- */
 
@@ -57,14 +58,15 @@ import ir.dastyar.ghest.util.Jalali
 fun DueChip(dueEpochDay: Long, today: Long, modifier: Modifier = Modifier) {
     val diff = dueEpochDay - today
     val scheme = MaterialTheme.colorScheme
-    val (text, color) = when {
-        diff < 0 -> if (diff == -1L) "دیروز" else "${Farsi.digit(-diff)} روز عقب" to scheme.error
+    val chip: Pair<String, Color> = when {
+        diff < 0 -> (if (diff == -1L) "دیروز" else "${Farsi.digit(-diff)} روز عقب") to scheme.error
         diff == 0L -> "امروز" to WarnAmber
         diff == 1L -> "فردا" to WarnAmber
         diff <= 3L -> "${Farsi.digit(diff)} روز مانده" to Color(0xFFEA580C)
         diff <= 7L -> "${Farsi.digit(diff)} روز مانده" to scheme.primary
         else -> Jalali.format(dueEpochDay) to scheme.onSurfaceVariant
     }
+    val (text, color) = chip
     Surface(
         modifier = modifier,
         shape = RoundedCornerShape(8.dp),
