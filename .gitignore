@@ -19,3 +19,6 @@ Thumbs.db
 # Keystore — هرگز فایل امضای اپ را در گیت‌هاب قرار نده!
 *.jks
 *.keystore
+
+# Kotlin compiler session files
+.kotlin/
