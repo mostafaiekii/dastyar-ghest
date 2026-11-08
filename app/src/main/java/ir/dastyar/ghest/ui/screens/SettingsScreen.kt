@@ -1,5 +1,7 @@
 package ir.dastyar.ghest.ui.screens
 
+import android.content.Intent
+import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +22,7 @@ import androidx.compose.material.icons.rounded.Description
 import androidx.compose.material.icons.rounded.DarkMode
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.LockOpen
+import androidx.compose.material.icons.rounded.SupportAgent
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Icon
@@ -36,9 +39,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.foundation.text.KeyboardOptions
@@ -47,12 +52,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ir.dastyar.ghest.ui.theme.ThemeMode
 import ir.dastyar.ghest.viewmodel.SettingsViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun SettingsScreen(vm: SettingsViewModel = viewModel()) {
     val theme by vm.themeMode.collectAsStateWithLifecycle()
     val pinEnabled by vm.pinEnabled.collectAsStateWithLifecycle()
     val snackbar = remember { SnackbarHostState() }
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     var pinDialog by remember { mutableStateOf(false) }
     var removePinDialog by remember { mutableStateOf(false) }
@@ -156,16 +164,44 @@ fun SettingsScreen(vm: SettingsViewModel = viewModel()) {
                 )
             }
 
+            // ---------- پشتیبانی ----------
+            SettingsCard("پشتیبانی") {
+                ActionRow(Icons.Rounded.SupportAgent, "ارسال پیام به پشتیبانی") {
+                    val intent = Intent(Intent.ACTION_SENDTO).apply {
+                        data = Uri.parse(
+                            "mailto:mroidad2@gmail.com?subject=" +
+                                Uri.encode("دست‌یار قسط — پشتیبانی")
+                        )
+                    }
+                    try {
+                        context.startActivity(intent)
+                    } catch (e: Exception) {
+                        scope.launch {
+                            snackbar.showSnackbar(
+                                "برنامه‌ی ایمیل پیدا نشد — آدرس مستقیم: mroidad2@gmail.com"
+                            )
+                        }
+                    }
+                }
+            }
+
             // ---------- درباره ----------
             SettingsCard("درباره") {
-                Text("دست‌یار قسط — نسخه ۱.۰.۱", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+                Text("دست‌یار قسط — نسخه ۱.۱.۰", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
                 Text(
                     "مدیریت آفلاین اقساط، چک و قرض؛ بدون نیاز به اینترنت و کاملاً رایگان.",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+                Spacer(Modifier.height(6.dp))
                 Text(
-                    "پیشنهاد و انتقاد: info@myket.ir (آدرس پشتیبانی خودت را اینجا بگذار)",
+                    "حریم خصوصی: همه‌ی اطلاعات و عکس مدارک فقط روی حافظه‌ی خودِ گوشی ذخیره می‌شود و هیچ داده‌ای برای هیچ سروری ارسال نمی‌شود.",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    "توسعه‌دهنده: دست‌یار (Dastyar) — mroidad2@gmail.com",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

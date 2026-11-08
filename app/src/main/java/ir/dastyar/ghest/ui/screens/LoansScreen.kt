@@ -37,6 +37,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -264,6 +265,18 @@ private fun AddLoanSheet(
                 suffix = { Text("قسط", style = MaterialTheme.typography.labelMedium) },
                 singleLine = true, modifier = Modifier.fillMaxWidth()
             )
+            Spacer(Modifier.height(6.dp))
+
+            // [دور ۲] انتخاب سریع تعداد قسط — بدون تایپ
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                items(listOf(6, 12, 18, 24, 36)) { c ->
+                    FilterChip(
+                        selected = Farsi.parseNumber(countText).toInt() == c,
+                        onClick = { countText = Farsi.digit(c) },
+                        label = { Text(Farsi.digit(c) + " قسط") }
+                    )
+                }
+            }
             Spacer(Modifier.height(10.dp))
 
             Text("فاصله اقساط", style = MaterialTheme.typography.labelMedium)
@@ -289,7 +302,16 @@ private fun AddLoanSheet(
             }
             Spacer(Modifier.height(10.dp))
 
-            JalaliDateField(label = "اولین سررسید", epochDay = due, onPick = { due = it })
+            // [دور ۲] انتخاب سریع «امروز» برای اولین سررسید
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                JalaliDateField(
+                    label = "اولین سررسید", epochDay = due, onPick = { due = it },
+                    modifier = Modifier.weight(1f)
+                )
+                TextButton(onClick = { due = Jalali.todayEpochDay() }) {
+                    Text("همین امروز")
+                }
+            }
             Spacer(Modifier.height(10.dp))
             OutlinedTextField(
                 value = note, onValueChange = { note = it },

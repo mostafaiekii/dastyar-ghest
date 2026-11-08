@@ -44,6 +44,7 @@ object Backup {
                     .put("note", l.note)
                     .put("archived", l.archived)
                     .put("createdAtEpochDay", l.createdAtEpochDay)
+                    .put("photoUri", l.photoUri ?: JSONObject.NULL)
             )
         }
 
@@ -128,7 +129,8 @@ object Backup {
                         firstDueEpochDay = o.getLong("firstDueEpochDay"),
                         note = o.optString("note"),
                         archived = o.optBoolean("archived"),
-                        createdAtEpochDay = o.getLong("createdAtEpochDay")
+                        createdAtEpochDay = o.getLong("createdAtEpochDay"),
+                        photoUri = o.optString("photoUri").ifEmpty { null }
                     )
                 )
             }

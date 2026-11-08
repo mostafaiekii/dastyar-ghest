@@ -4,10 +4,12 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
     entities = [Loan::class, Installment::class, Check::class, PersonalDebt::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -21,6 +23,13 @@ abstract class AppDatabase : RoomDatabase() {
         @Volatile
         private var instance: AppDatabase? = null
 
+        /** نسخه ۲: افزودن ستون عکس مدرک به وام‌ها (دور ۲) */
+        private val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE loans ADD COLUMN photoUri TEXT DEFAULT NULL")
+            }
+        }
+
         fun getInstance(context: Context): AppDatabase =
             instance ?: synchronized(this) {
                 instance ?: Room.databaseBuilder(
@@ -28,6 +37,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "dastyar_ghest.db"
                 )
+                    .addMigrations(MIGRATION_1_2)
                     .fallbackToDestructiveMigration()
                     .build()
                     .also { instance = it }

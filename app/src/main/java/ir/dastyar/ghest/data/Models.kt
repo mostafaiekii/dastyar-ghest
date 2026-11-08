@@ -37,7 +37,8 @@ data class Loan(
     val firstDueEpochDay: Long,
     val note: String = "",
     val archived: Boolean = false,
-    val createdAtEpochDay: Long
+    val createdAtEpochDay: Long,
+    val photoUri: String? = null
 )
 
 @Entity(

@@ -213,6 +213,42 @@ class LoanDetailViewModel(app: Application, state: SavedStateHandle) : AndroidVi
         }
     }
 
+    /** [دور ۲] ویرایش مشخصات وام؛ تغییر مبلغ روی همه‌ی اقساط پرداخت‌نشده هم اعمال می‌شود */
+    fun updateLoanMeta(
+        title: String, creditor: String, type: String,
+        amount: Long, note: String
+    ) {
+        viewModelScope.launch {
+            val loan = db.loanDao().getById(loanId) ?: return@launch
+            val safeAmount = amount.coerceIn(1L, 999_999_999_999L)
+            db.loanDao().update(
+                loan.copy(
+                    title = title.trim(), creditor = creditor.trim(),
+                    type = type, installmentAmount = safeAmount, note = note.trim()
+                )
+            )
+            db.installmentDao().getByLoan(loanId)
+                .filter { !it.isPaid && it.amount != safeAmount }
+                .forEach { db.installmentDao().update(it.copy(amount = safeAmount)) }
+        }
+    }
+
+    /** [دور ۲] ویرایش تاریخ و مبلغ یک قسط */
+    fun editInstallment(inst: Installment, dueEpochDay: Long, amount: Long) {
+        viewModelScope.launch {
+            val safeAmount = amount.coerceIn(1L, 999_999_999_999L)
+            db.installmentDao().update(inst.copy(dueEpochDay = dueEpochDay, amount = safeAmount))
+        }
+    }
+
+    /** [دور ۲] ذخیره/حذف عکس مدرک وام */
+    fun setPhoto(name: String?) {
+        viewModelScope.launch {
+            val loan = db.loanDao().getById(loanId) ?: return@launch
+            db.loanDao().update(loan.copy(photoUri = name))
+        }
+    }
+
     fun payAllOverdue() {
         viewModelScope.launch {
             db.installmentDao().payUntil(loanId, Jalali.todayEpochDay())
